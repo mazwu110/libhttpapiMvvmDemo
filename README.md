@@ -1,5 +1,5 @@
 # libhttpapiMvvmDemo
-自己封装的基于谷歌AAC  MVVM框架:
+自己封装的基于retrofit2,rxjava2谷歌AAC  MVVM网络通信框架:
 1 简单介绍AAC 的 MVVM 框架使用
 2 给大家推荐自己封装的 libhttpapi 泛型网络通信框架，是基于 retrofit2和rxjava2封装的，很方便使用，网上貌似还没找到类似的封装，
 相当于MVVM中的model，所有的VM用一个model就搞定，只需要传一个解析的对象（class）进去，就可以解析后台返回的所有JSON格式数据，
