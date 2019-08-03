@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <!-- 可以导入任意包，然后调用 -->
+        <import type="com.libhttpapimvvmdemo.R" />
+
+        <variable
+            name="userName"
+            type="com.libhttpapimvvmdemo.javaBean.TestDataBean" />
+
+        <variable
+            name="qClickListener"
+            type="com.libhttpapimvvmdemo.viewModel.MainActivityVM.QClickListener" />
+    </data>
+
+    <!--习惯用约束布局，减少嵌套，提高界面绘制性能 -->
+    <android.support.constraint.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.MainActivity">
+
+        <EditText
+            android:id="@+id/edt_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="动态绑定内容展示"
+            android:text="@{userName.usreName}"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btn_left"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:onClick="@{qClickListener.doGet}"
+            android:text="get请求"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/btn_middle"
+            app:layout_constraintTop_toBottomOf="@id/edt_top" />
+
+        <Button
+            android:id="@+id/btn_middle"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:onClick="@{qClickListener.doPost}"
+            android:text="post请求"
+            app:layout_constraintLeft_toRightOf="@+id/btn_left"
+            app:layout_constraintRight_toLeftOf="@+id/btn_right"
+            app:layout_constraintTop_toBottomOf="@id/edt_top" />
+
+        <Button
+            android:id="@+id/btn_right"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:onClick="@{qClickListener.getUserName}"
+            android:text="获取用户明"
+            app:layout_constraintLeft_toRightOf="@+id/btn_middle"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edt_top" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:background="@color/white"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_right" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

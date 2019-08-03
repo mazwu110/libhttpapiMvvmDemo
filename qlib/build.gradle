@@ -1,0 +1,48 @@
+apply plugin: 'com.android.library'
+
+android {
+    dataBinding {
+        enabled = true
+    }
+
+    compileSdkVersion 27
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+
+        // 以下这句是解决lombok报错的问题
+        javaCompileOptions { annotationProcessorOptions { includeCompileClasspath = true } }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+
+    api 'com.android.support:multidex:1.0.1'
+    api 'com.github.bumptech.glide:glide:4.3.1'
+
+    api project(':libhttpapi')
+    // 权限库，必须结合RxJava2使用,我随意引入的 大家可用 可去除 不影响
+    api 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.3@aar'
+
+    api 'com.android.support:recyclerview-v7:27.1.1'
+
+    // android mvvm 依赖组件
+    api "android.arch.lifecycle:extensions:1.1.0"
+    api "android.arch.lifecycle:viewmodel:1.1.0"
+    api "android.arch.lifecycle:livedata:1.1.0"
+}
