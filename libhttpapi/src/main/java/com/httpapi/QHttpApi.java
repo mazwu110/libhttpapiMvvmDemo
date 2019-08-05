@@ -1,6 +1,7 @@
 package com.httpapi;
 
 import android.text.TextUtils;
+
 import com.google.gson.Gson;
 import com.httpapi.apiservice.HttpApiService;
 import com.httpapi.apiservice.HttpCode;
@@ -120,7 +121,8 @@ public class QHttpApi {
     // 统一解析数据
     private static void parseDataApi(int what, BaseResultEntity data, Class<?> clazz, OnHttpApiListener listener) {
         String str = data.getData().toString();
-        if (TextUtils.isEmpty(str)) {
+        if (TextUtils.isEmpty(str) || !(str.contains("{") && str.contains("}"))
+                || !(str.contains("[") && str.contains("]"))) {
             if (listener != null)
                 listener.onSuccess(what, data.getData()); // 后台返回空交给前端自己判读
             return;
