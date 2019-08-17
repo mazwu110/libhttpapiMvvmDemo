@@ -1,20 +1,14 @@
 package com.httpapi;
 
-import android.text.TextUtils;
-
 import com.google.gson.Gson;
 import com.httpapi.apiservice.HttpApiService;
 import com.httpapi.apiservice.HttpCode;
 import com.httpapi.apiservice.OnHttpApiListener;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Map;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Call;
@@ -30,7 +24,7 @@ import okhttp3.Response;
  * 在这里只需要一个ApiService，retrofit2一般是使用多个ApiService，但这里封装成了一个，
  * 您只需要传地址和参数进来就行
  * 全是泛型解析，ApiService也只需要一个 棒棒棒
- * 特别说明，只能解析标准的JSON对象和JSON数组
+ * 特别说明，只能解析标准的JSON对象和JSON数组,data空的会返回给前端自己解析的哦
  */
 public class QHttpApi {
     static volatile Gson gson = new Gson();
@@ -120,22 +114,31 @@ public class QHttpApi {
 
     // 统一解析数据
     private static void parseDataApi(int what, BaseResultEntity data, Class<?> clazz, OnHttpApiListener listener) {
-        String str = data.getData().toString();
-        if (TextUtils.isEmpty(str) || !(str.contains("{") && str.contains("}"))
-                || !(str.contains("[") && str.contains("]"))) {
+        if (data.getData() == null || data.getData().equals("")) {
             if (listener != null)
-                listener.onSuccess(what, data.getData()); // 后台返回空交给前端自己判读
+                listener.onSuccess(what, data.getData());
             return;
         }
 
-        // gson泛型解析不了 /，暂时未找到原因
-        str = str.replaceAll("/", "--");
-        Object obj = gson.fromJson(str, (Type) clazz);
-        if (listener != null)
-            listener.onSuccess(what, obj);
+        // 必须先转JSON字符串，否则泛型转换会报错
+        String json = gson.toJson(data.getData());
+        // 非JSON格式的
+        if ((!json.contains("{") && !json.contains("}"))
+                && (!json.contains("[") && !json.contains("]"))) {
+            if (listener != null)
+                listener.onSuccess(what, data.getData()); // 后台返回空或者直接在data中返回提示语的交给前端自己判读
+            return;
+        }
+
+        BaseResultEntity result = gson.fromJson(json, (Type) clazz);
+        // 此处可以通过result把父类的值传递给子类,调用set方法即可
+        if (listener != null) {
+            listener.onSuccess(what, result);
+        }
     }
 
     // 直接用OKHTTP3返回普通的字符串，即不做泛型解析，后台返回什么交给开发者自己解析,避免后台返回特殊数据，比如XML等
+    // post请求可以自己模仿写即可
     public static void doStrGet(String url, Map<String, Object> params,
                                 final int what, final OnHttpApiListener listener) {
         Request.Builder builder = new Request.Builder();
