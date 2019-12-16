@@ -1,6 +1,8 @@
 package com.httpapi;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.httpapi.apiservice.HttpApiService;
 import com.httpapi.apiservice.HttpCode;
 import com.httpapi.apiservice.OnHttpApiListener;
@@ -8,6 +10,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -113,10 +117,9 @@ public class QHttpApi {
     }
 
     // 统一解析数据
-    private static void parseDataApi(int what, BaseResultEntity data, Class<?> clazz, OnHttpApiListener listener) {
-        if (data.getData() == null || data.getData().equals("")) {
-            if (listener != null)
-                listener.onSuccess(what, data.getData());
+    private static <T> void parseDataApi(int what, BaseResultEntity data, Class<T> clazz, OnHttpApiListener listener) {
+        if (data.getData() == null || data.getData().equals("") || data.getData().equals("null")) {
+            listener.onSuccess(what, data.getData()); //返回空由前端自己判断是成功还是失败，这里默认返回在成功接口里
             return;
         }
 
@@ -125,16 +128,26 @@ public class QHttpApi {
         // 非JSON格式的
         if ((!json.contains("{") && !json.contains("}"))
                 && (!json.contains("[") && !json.contains("]"))) {
-            if (listener != null)
-                listener.onSuccess(what, data.getData()); // 后台返回空或者直接在data中返回提示语的交给前端自己判读
+            listener.onSuccess(what, data.getData()); // 后台返回空或者直接在data中返回提示语的交给前端自己判读
             return;
         }
 
-        BaseResultEntity result = gson.fromJson(json, (Type) clazz);
-        // 此处可以通过result把父类的值传递给子类,调用set方法即可
-        if (listener != null) {
-            listener.onSuccess(what, result);
+        // data是纯数组，即没有字段头的数组比如 data:[]
+        if (data.getData() instanceof ArrayList) {
+            List<JsonObject> jsonObjects = gson.fromJson(json, new TypeToken<List<JsonObject>>() {
+            }.getType());
+            List<T> list = new ArrayList<>();
+            for (JsonObject jsonObject : jsonObjects) {
+                list.add(gson.fromJson(jsonObject, clazz));
+            }
+
+            listener.onSuccess(what, list);// 取数据处 List<T> mylist = (List<T>)data; 即可取到列表中的数据
+            return;
         }
+
+        // data是有字段头和非数组的
+        BaseResultEntity result = gson.fromJson(json, (Type) clazz);
+        listener.onSuccess(what, result);
     }
 
     // 直接用OKHTTP3返回普通的字符串，即不做泛型解析，后台返回什么交给开发者自己解析,避免后台返回特殊数据，比如XML等
