@@ -1,6 +1,8 @@
 package com.httpapi.apiservice;
 
 import com.httpapi.BaseResultEntity;
+
+import java.util.List;
 import java.util.Map;
 import io.reactivex.Flowable;
 import okhttp3.MultipartBody;
@@ -8,6 +10,7 @@ import okhttp3.RequestBody;
 import retrofit2.http.Body;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.HeaderMap;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -40,19 +43,21 @@ public interface HttpApiService {
     @POST
     Flowable<BaseResultEntity> doJsonPost(@Url String url, @Body RequestBody body);
 
-    /**
-     * 单图上传
-     */
-    @Multipart
+    @Headers({"Content-Type: application/json","Accept: application/json"})//需要添加头
     @POST
-    Flowable<BaseResultEntity> upLoadFile(@Url String url, @Part MultipartBody.Part file);
+    Flowable<BaseResultEntity> doJsonPost(@Url String url, @HeaderMap Map<String, String> headers, @Body RequestBody body);
 
     /**
-     * 多图上传
+     * 单文件上传
      */
     @Multipart
     @POST
-    Flowable<BaseResultEntity> uploadFiles(@Url String url, @Part("files") String files, @PartMap() Map<String, RequestBody> maps);
+    Flowable<BaseResultEntity> uploadFile(@Url String url, @Part MultipartBody.Part part);
+
+    // 多文件上传
+    @Multipart
+    @POST
+    Flowable<BaseResultEntity> uploadFiles(@Url String url, @Part List< MultipartBody.Part> partList);
 
     /**
      * 下载
