@@ -121,7 +121,7 @@ public class QHttpApi {
                 });
     }
 
-    private static void parseDataApi(int what, BaseResultEntity data, Class<?> clazz, OnHttpApiListener listener) {
+    private static <T> void parseDataApi(int what, BaseResultEntity data, Class<T> clazz, OnHttpApiListener listener) {
         if (data.getData() == null || data.getData().equals("") || data.getData().equals("null")) {
             listener.onSuccess(what, data.getData()); //返回空由前端自己判断是成功还是失败，这里默认返回在成功接口里
             return;
@@ -139,7 +139,11 @@ public class QHttpApi {
         // 纯JSON数组的,比如data:[],调用处传递的参数格式必须clazz是MyClassName[].class,否则不能解析
         // 接收处直接 List<MyClassName> list = (List<MyClassName>)data; 即可接收到后台传回的Data数据
         if (data.getData() instanceof ArrayList) {
-            listener.onSuccess(what, Arrays.asList(gson.fromJson(json, (Type)clazz)));
+            T[] backData = gson.fromJson(json, (Type)clazz);
+            listener.onSuccess(what, Arrays.asList(backData));
+            // 不能简写成下面这句，要不，接收数据处直接用List<MyClassName> list = (List<MyClassName>)data的话会报错，我也不知道是什么问题
+            //反正分开像上面这种写法就可以，下面这个就不行，看了老外写的学来的
+            //listener.onSuccess(what, Arrays.asList(gson.fromJson(json, (Type)clazz)));
             return;
         }
 
