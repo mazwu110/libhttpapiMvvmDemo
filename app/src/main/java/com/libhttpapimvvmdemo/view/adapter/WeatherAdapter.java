@@ -16,7 +16,7 @@ import com.qlib.libadapter.SuperBaseAdapter;
 
 // SuperBaseAdapter 是我自己封装的，大家可以任意改，SuperBaseAdapter
 // 使用处，只需要new WeatherAdapter，传入相应的参数即可使用，
-// 如果还要实现点击事件，是要重新getClickListener，然后在其内部定义相应的方法，然后绑定到item布局即可,
+// 如果还要实现点击事件，是要重写getClickListener，然后在其内部定义相应的方法，然后绑定到item布局即可,
 // 点击事件具体可参考UserInfoAdapter中的，已实现
 public class WeatherAdapter extends SuperBaseAdapter<FutureBean>  {
 
