@@ -5,6 +5,7 @@ import android.os.StrictMode;
 import android.support.multidex.MultiDexApplication;
 
 import com.qlib.qutils.GlideUtils;
+import com.qlib.qutils.ToastUtils;
 
 public class QApp extends MultiDexApplication {
     public static GlideUtils mImageLoader;
@@ -12,6 +13,7 @@ public class QApp extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        ToastUtils.init(this);
         mImageLoader = GlideUtils.getInstance(getApplicationContext());
 
         // android 7.0系统解决拍照的问题
